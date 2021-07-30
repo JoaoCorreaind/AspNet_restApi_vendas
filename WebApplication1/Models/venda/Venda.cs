@@ -4,21 +4,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication1.Models.vendedor;
+using WebApplication1.Models.cliente;
 namespace WebApplication1.Models.venda
 {
     public class Venda
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public Vendedor vendedor { get; set; }
-        public List<Product> produtos { get; set; }
-        public double valor { get; set; }
-        public DateTime created_at { get; set; }
-
+        
+        public double Valor { get; set; }
+        public DateTime Created_at { get; set; }
+        public Vendedor Vendedor { get; set; }
+        public Cliente Cliente { get; set; }
+        public List<Product> Produtos { get; set; }
         public void setDate()
         {
-            this.created_at = DateTime.Now;
+            this.Created_at = DateTime.Now;
         }
         public void setValor()
         {

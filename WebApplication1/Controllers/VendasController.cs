@@ -53,9 +53,9 @@ namespace WebApplication1.Controllers
             )
         {
             venda.setDate();
-            foreach (Product produto  in venda.produtos)
+            foreach (Product produto  in venda.Produtos)
             {
-                venda.valor += produto.valorVenda;
+                venda.Valor += produto.ValorVenda;
             }
             try
             {
@@ -75,9 +75,9 @@ namespace WebApplication1.Controllers
            [FromBody] Venda venda
            )
         {
-            foreach (Product produto in venda.produtos)
+            foreach (Product produto in venda.Produtos)
             {
-                venda.valor += produto.valorVenda;
+                venda.Valor += produto.ValorVenda;
             }
             try
             {

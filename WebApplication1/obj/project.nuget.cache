@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "YuS/kyIwr9q2op0st7XvhBvzBigdqRcBAqUN+iDmP10+UM4VGGmnCxv3P10Zsc+4tC/z2C4LasglyFeEyXjTig==",
+  "dgSpecHash": "/nJ7zgNWhx2tVoOXlh9eBRbXyNjeeQYCssAVjadsHSxytJlYtNtZxK+U0vR76VwQ+WwnVP/tB3jGcvrJVPSBRQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\inde0\\source\\repos\\WebApi\\WebApplication1\\WebApplication1.csproj",
+  "projectFilePath": "C:\\Users\\inde0\\source\\repos\\WebApi\\AspNet_restApi_vendas\\WebApplication1\\WebApplication1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\inde0\\.nuget\\packages\\bcrypt.net-next\\4.0.2\\bcrypt.net-next.4.0.2.nupkg.sha512",
     "C:\\Users\\inde0\\.nuget\\packages\\dnsclient\\1.4.0\\dnsclient.1.4.0.nupkg.sha512",
+    "C:\\Users\\inde0\\.nuget\\packages\\fluentvalidation\\10.3.0\\fluentvalidation.10.3.0.nupkg.sha512",
+    "C:\\Users\\inde0\\.nuget\\packages\\fluentvalidation.aspnetcore\\10.3.0\\fluentvalidation.aspnetcore.10.3.0.nupkg.sha512",
+    "C:\\Users\\inde0\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\10.3.0\\fluentvalidation.dependencyinjectionextensions.10.3.0.nupkg.sha512",
     "C:\\Users\\inde0\\.nuget\\packages\\microsoft.aspnetcore.authentication\\2.2.0\\microsoft.aspnetcore.authentication.2.2.0.nupkg.sha512",
     "C:\\Users\\inde0\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\inde0\\.nuget\\packages\\microsoft.aspnetcore.authentication.core\\2.2.0\\microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",

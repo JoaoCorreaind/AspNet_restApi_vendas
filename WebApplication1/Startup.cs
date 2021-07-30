@@ -7,17 +7,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
-using System.Threading.Tasks;
+
  
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
-using WebApplication1.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+using FluentValidation.AspNetCore;
+
 namespace WebApplication1
 {
     public class Startup
@@ -56,6 +56,10 @@ namespace WebApplication1
                     ValidateAudience = false
                 };
             });
+            services.AddControllers().AddFluentValidation(x => x
+                .RegisterValidatorsFromAssemblyContaining<Startup>());
+
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -66,6 +70,7 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+           
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -9,12 +9,12 @@ using System.Globalization;
 
 namespace WebApplication1.Models
 {
-    public class Categoria
+    public class Categoria 
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-
-        [BsonRequired]
+        
+       
         public string nome { get; set; }
 
         public string descricao { get; set; }

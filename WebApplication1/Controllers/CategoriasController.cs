@@ -7,6 +7,10 @@ using WebApplication1.Models;
 using System.Net;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using FluentValidation.Results;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using FluentValidation;
 
 namespace WebApplication1.Controllers
 {
@@ -24,9 +28,9 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Categoria>>> index()
         {
-            
+
             var categorias = await _categoriaContext.Categoria.Find(x => true).ToListAsync();
-            
+
             return categorias;
         }
 
@@ -46,11 +50,12 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Categoria>> store(
+        public async Task<ActionResult<dynamic>> store(
 
             [FromBody] Categoria categoria
             )
         {
+
             categoria.created_at = DateTime.Now;
             try
             {

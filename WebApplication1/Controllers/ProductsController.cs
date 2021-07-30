@@ -51,7 +51,7 @@ namespace WebApplication1.Controllers
             [FromBody] Product produto
             )
         {
-            produto.created_at = DateTime.Now;
+            produto.setDate();
             try
             {
                 await _productContext.Produtos.InsertOneAsync(produto);

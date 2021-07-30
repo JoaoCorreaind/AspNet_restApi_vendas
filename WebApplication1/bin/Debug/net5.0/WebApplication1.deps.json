@@ -34,6 +34,7 @@
       "WebApplication1/1.0.0": {
         "dependencies": {
           "BCrypt.Net-Next": "4.0.2",
+          "FluentValidation.AspNetCore": "10.3.0",
           "Microsoft.AspNetCore.Authentication": "2.2.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "5.0.8",
           "Microsoft.AspNetCore.Authorization": "6.0.0-preview.6.21355.2",
@@ -345,6 +346,47 @@
         },
         "compile": {
           "lib/netstandard2.1/DnsClient.dll": {}
+        }
+      },
+      "FluentValidation/10.3.0": {
+        "runtime": {
+          "lib/net5.0/FluentValidation.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "10.3.0.0"
+          }
+        },
+        "compile": {
+          "lib/net5.0/FluentValidation.dll": {}
+        }
+      },
+      "FluentValidation.AspNetCore/10.3.0": {
+        "dependencies": {
+          "FluentValidation": "10.3.0",
+          "FluentValidation.DependencyInjectionExtensions": "10.3.0"
+        },
+        "runtime": {
+          "lib/net5.0/FluentValidation.AspNetCore.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "10.3.0.0"
+          }
+        },
+        "compile": {
+          "lib/net5.0/FluentValidation.AspNetCore.dll": {}
+        }
+      },
+      "FluentValidation.DependencyInjectionExtensions/10.3.0": {
+        "dependencies": {
+          "FluentValidation": "10.3.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0-preview.6.21352.12"
+        },
+        "runtime": {
+          "lib/netstandard2.1/FluentValidation.DependencyInjectionExtensions.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "10.3.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.1/FluentValidation.DependencyInjectionExtensions.dll": {}
         }
       },
       "Microsoft.AspNetCore.Authentication/2.2.0": {
@@ -2547,6 +2589,27 @@
       "sha512": "sha512-CO1NG1zQdV0nEAXmr/KppLZ0S1qkaPwV0kPX5YPgmYBtrBVh1XMYHM54IXy3RBJu1k4thFtpzwo4HNHqxiuFYw==",
       "path": "dnsclient/1.4.0",
       "hashPath": "dnsclient.1.4.0.nupkg.sha512"
+    },
+    "FluentValidation/10.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ujEB9UMBPDLib6dyhSRhl93IE6ko4ZU6Nz9MFqohaKcvyf06Hk0yDQUFJGF6RgAOsm27O7ZZHVDpXx7oU5vBcg==",
+      "path": "fluentvalidation/10.3.0",
+      "hashPath": "fluentvalidation.10.3.0.nupkg.sha512"
+    },
+    "FluentValidation.AspNetCore/10.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-a0TgtOYjiMiLfmKz5SjMeTrATDP5O2PLAKOPVlmg0HkmqWOvP9jZ7ZFGjwUYfv5EDCnd/YWX92yfRMix2HJ5tQ==",
+      "path": "fluentvalidation.aspnetcore/10.3.0",
+      "hashPath": "fluentvalidation.aspnetcore.10.3.0.nupkg.sha512"
+    },
+    "FluentValidation.DependencyInjectionExtensions/10.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-d2QCRJivTfDGCVXKbsSIks2mI744TCUL8ZPrJccnxIIbmvuj51C8KfyomnyJSMBnxLIhigI4LrdsXHzW3uUIHw==",
+      "path": "fluentvalidation.dependencyinjectionextensions/10.3.0",
+      "hashPath": "fluentvalidation.dependencyinjectionextensions.10.3.0.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authentication/2.2.0": {
       "type": "package",

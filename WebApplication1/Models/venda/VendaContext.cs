@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using Microsoft.Extensions.Options;
-using WebApplication1.Models.vendedor;
 namespace WebApplication1.Models.venda
 {
     public class VendaContext

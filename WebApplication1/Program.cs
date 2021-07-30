@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace WebApplication1
 {
+    //fazer
+    //produtos mais vendidos
+    //vendedores que mais venderam
+    //relatorio de vendas por data
+
     public class Program
     {
         public static void Main(string[] args)

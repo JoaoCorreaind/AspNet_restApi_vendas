@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using WebApplication1.Models;
-using WebApplication1.Models.vendedor;
 using MongoDB.Driver;
 using Microsoft.Extensions.Options;
 
