@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WebApplication1.Models;
 using MongoDB.Driver;
 using Microsoft.Extensions.Options;
+using WebApplication1.DomainInterfaces;
 
 namespace WebApplication1.Controllers
 {
@@ -15,32 +16,32 @@ namespace WebApplication1.Controllers
     public class VendedorController : Controller
     {
         private readonly VendedorContext _vendedorContext;
+        private readonly IVendedorRepository _repository;
 
-
-        public VendedorController(IOptions<ConfigDb> opcoes)
+        public VendedorController(IOptions<ConfigDb> opcoes, IVendedorRepository repository)
         {
             _vendedorContext = new VendedorContext(opcoes);
+            _repository = repository;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Vendedor>>> index()
         {
-            var vendedores = await _vendedorContext.Vendedores.Find(x => true).ToListAsync();
+            var vendedores = await _repository.getAllAsync();
             return vendedores;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Vendedor>> find(string id)
         {
-            var vendedor = await _vendedorContext.Vendedores.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var vendedor = await _repository.getByIdAsync(id);
             if (vendedor != null)
             {
                 return vendedor;
             }
             else
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Produto não encontrado", complemento = "verifique o criterio de busca", status = "400" });
+                return NotFound();
             }
         }
 
@@ -50,18 +51,12 @@ namespace WebApplication1.Controllers
             [FromBody] Vendedor vendedor
             )
         {
-            vendedor.created_at = DateTime.Now;
-            try
+            if (!ModelState.IsValid) //<----Validate here
             {
-                await _vendedorContext.Vendedores.InsertOneAsync(vendedor);
-                return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Vendedor = vendedor });
+                return new BadRequestObjectResult(ModelState);
             }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Falha ao criar", complemento = "um ou mais erros ocorreram", status = "400", error = e.Message });
-            }
-
+            await _repository.storeAsync(vendedor);
+            return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Vendedor = vendedor });
         }
 
         [HttpPut]
@@ -69,36 +64,19 @@ namespace WebApplication1.Controllers
            [FromBody] Vendedor vendedor
            )
         {
-
-            try
+            if (!ModelState.IsValid) //<----Validate here
             {
-                var response = await _vendedorContext.Vendedores.ReplaceOneAsync<Vendedor>(x => x.Id == vendedor.Id, vendedor);
-                return Json(new { message = "Atualizado com sucesso", status = "200", Data = DateTime.Now });
+                return new BadRequestObjectResult(ModelState);
             }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Falha ao atualizar", complemento = "um ou mais erros ocorreram", status = "400", error = e.Message });
-            }
-
+            var response = await _repository.updateAsync(vendedor);
+            return response;
         }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Vendedor>> Delete(string id)
         {
-            try
-            {
-                var response = await _vendedorContext.Vendedores.FindOneAndDeleteAsync<Vendedor>(x => x.Id == id);
-
-                return Json(new { message = "deletado com sucesso", status = "200", deleted_at = DateTime.Now, Deleted_Vendedor = response });
-            }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Um ou mais erros aconteceram", status = "400", erro = e.Message, trace = e.StackTrace });
-
-            }
-
-
+            var response = await _repository.deleteAsync(id);
+            return response;
         }
     }
 }

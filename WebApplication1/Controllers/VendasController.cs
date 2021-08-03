@@ -6,27 +6,27 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using WebApplication1.Models.venda;
-using MongoDB.Driver;
-using WebApplication1.Models;
+
+using WebApplication1.DomainInterfaces;
 
 namespace WebApplication1.Controllers
 {
     [Route("v1/vendas")]
     public class VendasController : Controller
     {
-        private readonly VendaContext _vendaContext;
+        private readonly IVendaRepository _repository;
 
 
-        public VendasController(IOptions<ConfigDb> opcoes)
+        public VendasController(IVendaRepository repository)
         {
-            _vendaContext = new VendaContext(opcoes);
+            _repository = repository;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Venda>>> index()
         {
 
-            var vendas = await _vendaContext.Vendas.Find(x => true).ToListAsync();
+            var vendas = await _repository.getAllAsync();
 
             return vendas;
         }
@@ -34,16 +34,12 @@ namespace WebApplication1.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Venda>> find(string id)
         {
-            var venda = await _vendaContext.Vendas.Find(x => x.Id == id).FirstOrDefaultAsync();
-            if (venda != null)
+            var venda = await _repository.getByIdAsync(id);
+            if (venda == null)
             {
-                return venda;
+                return NotFound();
             }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Categoria não encontrada", complemento = "verifique o criterio de busca", status = "400" });
-            }
+            return venda;
         }
 
         [HttpPost]
@@ -52,21 +48,8 @@ namespace WebApplication1.Controllers
             [FromBody] Venda venda
             )
         {
-            venda.setDate();
-            foreach (Product produto  in venda.Produtos)
-            {
-                venda.Valor += produto.ValorVenda;
-            }
-            try
-            {
-                await _vendaContext.Vendas.InsertOneAsync(venda);
-                return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Venda = venda });
-            }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Falha ao criar", complemento = "um ou mais erros ocorreram", status = "400", error = e.Message });
-            }
+            await _repository.storeAsync(venda);
+            return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Venda = venda });
 
         }
 
@@ -75,37 +58,20 @@ namespace WebApplication1.Controllers
            [FromBody] Venda venda
            )
         {
-            foreach (Product produto in venda.Produtos)
-            {
-                venda.Valor += produto.ValorVenda;
-            }
-            try
-            {
-                var response = await _vendaContext.Vendas.ReplaceOneAsync<Venda>(x => x.Id == venda.Id, venda);
-                return Json(new { message = "Atualizado com sucesso", status = "200", Data = DateTime.Now });
-            }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Falha ao atualizar", complemento = "um ou mais erros ocorreram", status = "400", error = e.Message });
-            }
+
+            var response = await _repository.updateAsync(venda);
+            return Json(new { message = "Atualizado com sucesso", status = "200", Data = DateTime.Now, Response = response });
 
         }
+
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Venda>> Delete(string id)
         {
-            try
-            {
-                var response = await _vendaContext.Vendas.FindOneAndDeleteAsync<Venda>(x => x.Id == id);
 
-                return Json(new { message = "deletado com sucesso", status = "200", deleted_at = DateTime.Now, DeletedCategoria = response });
-            }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Um ou mais erros aconteceram", status = "400", erro = e.Message, trace = e.StackTrace });
+            var response = await _repository.deleteAsync(id);
 
-            }
+            return Json(new { message = "deletado com sucesso", status = "200", deleted_at = DateTime.Now, DeletedCategoria = response });
 
 
         }

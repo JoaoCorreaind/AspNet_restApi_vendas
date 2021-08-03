@@ -17,6 +17,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 using FluentValidation.AspNetCore;
+using WebApplication1.Models;
+using WebApplication1.DomainInterfaces;
+using WebApplication1.Repositores;
 
 namespace WebApplication1
 {
@@ -32,11 +35,23 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+            services.AddTransient<ICategoriaRepository, CategoriaRepository>();
+            services.AddTransient<IFornecedorRepository, FornecedorRepository>();
+            services.AddTransient<IVendedorRepository, VendedorRepository>();
+            services.AddTransient<IProdutoRepository, ProdutoRepository>();
+            services.AddTransient<IVendaRepository, VendaRepository>();
+
+
             services.Configure<ConfigDb>(opcoes =>
             {
                 opcoes.ConnectString = Configuration.GetSection("mongoConnect:connectionString").Value;
                 opcoes.Database = Configuration.GetSection("mongoConnect:database").Value;
             });
+
+            //services.AddTransient<ICategoriaRepository, CategoriaRepository>();
+
+
             services.AddCors();
             var key = Encoding.ASCII.GetBytes(settings.Secret);
             services.AddAuthentication(x =>
@@ -56,11 +71,9 @@ namespace WebApplication1
                     ValidateAudience = false
                 };
             });
-            services.AddControllers().AddFluentValidation(x => x
-                .RegisterValidatorsFromAssemblyContaining<Startup>());
 
+            services.AddControllers().AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Startup>());
 
-            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication1", Version = "v1" });

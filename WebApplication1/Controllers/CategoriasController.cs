@@ -11,6 +11,8 @@ using FluentValidation.Results;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using FluentValidation;
+using WebApplication1.Repositores;
+using WebApplication1.DomainInterfaces;
 
 namespace WebApplication1.Controllers
 {
@@ -18,34 +20,33 @@ namespace WebApplication1.Controllers
     public class CategoriasController : Controller
     {
         private readonly CategoriaContext _categoriaContext;
+        private readonly ICategoriaRepository _repository;
 
-
-        public CategoriasController(IOptions<ConfigDb> opcoes)
+        public CategoriasController(IOptions<ConfigDb> opcoes, ICategoriaRepository repository)
         {
             _categoriaContext = new CategoriaContext(opcoes);
+            _repository = repository;
         }
+       
 
         [HttpGet]
         public async Task<ActionResult<List<Categoria>>> index()
         {
-
-            var categorias = await _categoriaContext.Categoria.Find(x => true).ToListAsync();
-
-            return categorias;
+            var categorias = await _repository.getAllAsync();
+            return Ok(categorias);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Categoria>> find(string id)
         {
-            var categoria = await _categoriaContext.Categoria.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var categoria = await _repository.getByIdAsync(id);
             if (categoria != null)
             {
                 return categoria;
             }
             else
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Categoria não encontrada", complemento = "verifique o criterio de busca", status = "400" });
+                return NotFound();
             }
         }
 
@@ -55,31 +56,27 @@ namespace WebApplication1.Controllers
             [FromBody] Categoria categoria
             )
         {
-
-            categoria.created_at = DateTime.Now;
-            try
+            if (!ModelState.IsValid) //<----Validate here
             {
-                await _categoriaContext.Categoria.InsertOneAsync(categoria);
-                return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Categoria = categoria });
+                return new BadRequestObjectResult(ModelState);
             }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Falha ao criar", complemento = "um ou mais erros ocorreram", status = "400", error = e.Message });
-            }
-
+            await _repository.storeAsync(categoria);
+            return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Categoria = categoria });
         }
 
         [HttpPut]
-        public async Task<ActionResult<Product>> update(
+        public async Task<ActionResult<Categoria>> update(
            [FromBody] Categoria categoria
            )
         {
-
+            if (!ModelState.IsValid) //<----Validate here
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
             try
             {
-                var response = await _categoriaContext.Categoria.ReplaceOneAsync<Categoria>(x => x.Id == categoria.Id, categoria);
-                return Json(new { message = "Atualizado com sucesso", status = "200", Data = DateTime.Now });
+                var response = await _repository.updateAsync(categoria);
+                return response;
             }
             catch (Exception e)
             {
@@ -93,9 +90,8 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var response = await _categoriaContext.Categoria.FindOneAndDeleteAsync<Categoria>(x => x.Id == id);
-
-                return Json(new { message = "deletado com sucesso", status = "200", deleted_at = DateTime.Now, DeletedCategoria = response });
+                var response = await _repository.deleteAsync(id);
+                return response;
             }
             catch (Exception e)
             {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using Microsoft.Extensions.Options;
 using System.Net;
+using WebApplication1.DomainInterfaces;
 
 namespace WebApplication1.Controllers
 {
@@ -15,47 +16,49 @@ namespace WebApplication1.Controllers
     public class ProductsController : Controller
     {
 
-        private readonly ProductContext _productContext;
+        private readonly IProdutoRepository _repository;
 
 
-        public ProductsController(IOptions<ConfigDb> opcoes)
+        public ProductsController(IProdutoRepository repository)
         {
-            _productContext = new ProductContext(opcoes);
+            _repository = repository;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Product>>> index()
         {
-            var produtos = await _productContext.Produtos.Find(x => true).ToListAsync();
+            var produtos = await _repository.getAllAsync();
             return produtos;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> find(string id)
         {
-            var produto = await _productContext.Produtos.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var produto = await _repository.getByIdAsync(id);
             if(produto != null)
             {
                 return produto;
             }
             else
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new { message = "Produto não encontrado", complemento = "verifique o criterio de busca", status = "400" });
+                return NotFound();
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> store(
+        public async Task<ActionResult<dynamic>> store(
           
             [FromBody] Product produto
             )
         {
-            produto.setDate();
+            if (!ModelState.IsValid) //<----Validate here
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
             try
             {
-                await _productContext.Produtos.InsertOneAsync(produto);
-                return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Produto = produto });
+                var response = await _repository.storeAsync(produto);
+                return Json(new { message = "Criado com sucesso", status = "200", Data = DateTime.Now, Produto = produto, Response = response });
             }
             catch (Exception e)
             {
@@ -70,11 +73,14 @@ namespace WebApplication1.Controllers
            [FromBody] Product produto
            )
         {
-
+            if (!ModelState.IsValid) //<----Validate here
+            {
+                return new BadRequestObjectResult(ModelState);
+            }
             try
             {
-                var response = await _productContext.Produtos.ReplaceOneAsync<Product>(x => x.Id == produto.Id, produto);
-                return Json(new { message = "Atualizado com sucesso", status = "200", Data = DateTime.Now });
+                var response = await _repository.updateAsync(produto);
+                return Json(new { message = "Atualizado com sucesso", status = "200", Data = DateTime.Now, New = response });
             }catch(Exception e)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -87,9 +93,9 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var response = await _productContext.Produtos.FindOneAndDeleteAsync<Product>(x => x.Id == id);
+                var response = await _repository.deleteAsync(id);
 
-                return Json(new { message = "deletado com sucesso", status = "200", deleted_at = DateTime.Now, DeletedProdut = response });
+                return Json(new { message = "deletado com sucesso", status = "200", deleted_at = DateTime.Now, Response = response });
             }catch(Exception e)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -99,34 +105,5 @@ namespace WebApplication1.Controllers
 
 
         }
-
-        //public async Task<IActionResult> index()
-        //{
-        //    var response = await _productContext.Produtos.Find(x => true).ToListAsync();
-        //    return (IActionResult)response;
-
-        //}
-
-        //[HttpGet]
-        //public IActionResult NovoProd()
-        //{
-        //    return View();
-        //}
-
-
-        //public async Task<IActionResult> store(Product produto)
-        //{
-        //    produto.created_at = DateTime.Now;
-        //    await _productContext.Produtos.InsertOneAsync(produto);
-        //    return RedirectToAction(nameof(Index));
-        //}
-        //[HttpGet("Products/delete/{id}")]
-        //public async  Task<IActionResult> delete(int id)
-        //{
-        //    var deleteFilter = Builders<Product>.Filter.Eq("Id", id);
-        //    await _productContext.Produtos.DeleteOneAsync(deleteFilter);
-        //    return RedirectToAction(nameof(Index));
-
-        //}
     }
 }
